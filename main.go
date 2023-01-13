@@ -40,6 +40,7 @@ func init() {
 	sess, err := mgo.Dial(hostName)
 	checkErr(err)
 	sess.SetMode(mgo.Monotonic, true)
+	db = sess.DB(dbName)
 }
 func main() {
 
