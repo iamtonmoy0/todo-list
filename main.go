@@ -28,6 +28,10 @@ type (
 	}
 
 	todo struct {
+		ID        string    `json:"id"`
+		Title     string    `json:"title"`
+		Completed string    `json:"complete"`
+		CreateAt  time.Time `json:"create_at"`
 	}
 )
 
