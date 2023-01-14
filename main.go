@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -76,6 +77,40 @@ func fetchTodos(w http.ResponseWriter, r *http.Response) {
 	} //bson data from db and send to frontend ,
 	rnd.JSON(w, http.StatusOK, renderer.M{
 		"data": todoList,
+	})
+}
+
+func createTodo(w http.ResponseWriter, r *http.Request) {
+	var t todo
+	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
+		rnd.JSON(w, http.StatusProcessing, err)
+		return
+	}
+	// simple validation
+	if t.Title == "" {
+		rnd.JSON(w, http.StatusBadRequest, renderer.M{
+			"message": "title field is required",
+		})
+		return
+	}
+
+	// if input is valid ,then create todo
+	tm := todoModel{
+		ID:        bson.NewObjectId(),
+		Title:     t.Title,
+		Completed: false,
+		CreateAt:  time.Now(),
+	}
+	if err := db.C(collectionName).Insert(&tm); err != nil {
+		rnd.JSON(w, http.StatusProcessing, renderer.M{
+			"message": "failed to same todo",
+			"error":   err,
+		})
+		return
+	}
+	rnd.JSON(w, http.StatusCreated, renderer.M{
+		"message": "todo created success",
+		"todo_id": tm.ID.Hex(),
 	})
 }
 
