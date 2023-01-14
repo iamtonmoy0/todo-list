@@ -33,14 +33,14 @@ type (
 		ID        bson.ObjectId `bson:"_id,omitempty"`
 		Title     string        `bson:"title"`
 		Completed bool          `bson:"completed"`
-		CreateAt  time.Time     `bson:"createAt"`
+		CreatedAt time.Time     `bson:"createAt"`
 	}
 
 	todo struct {
 		ID        string    `json:"id"`
 		Title     string    `json:"title"`
 		Completed bool      `json:"completed"`
-		CreateAt  time.Time `json:"created_at"`
+		CreatedAt time.Time `json:"created_at"`
 	}
 )
 
