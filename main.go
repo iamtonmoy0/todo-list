@@ -57,14 +57,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	err := rnd.Template(w, http.StatusOK, []string{"/static/home.tpl"}, nil)
 	checkErr(err)
 }
-func fetchTodos(w http.ResponseWriter, r *http.Response) {
+func fetchTodos(w http.ResponseWriter, r *http.Request) {
 	todo := []todoModel{}
+
 	if err := db.C(collectionName).Find(bson.M{}).All(&todo); err != nil {
 		rnd.JSON(w, http.StatusProcessing, renderer.M{
 			"message": "failed to fetch todo",
 			"error":   err,
 		})
-
+		return
 	}
 	todoList := []todo{}
 
