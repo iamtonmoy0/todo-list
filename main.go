@@ -39,7 +39,7 @@ type (
 	todo struct {
 		ID        string    `json:"id"`
 		Title     string    `json:"title"`
-		Completed string    `json:"complete"`
+		Completed bool      `json:"complete"`
 		CreateAt  time.Time `json:"create_at"`
 	}
 )
@@ -144,8 +144,8 @@ func fetchTodos(w http.ResponseWriter, r *http.Request) {
 		todoList = append(todoList, todo{
 			ID:        t.ID.Hex(),
 			Title:     t.Title,
-			Completed: t.completed,
-			CreatedAt: t.createdAt,
+			Completed: t.Completed,
+			CreatedAt: t.CreatedAt,
 		})
 	}
 
@@ -211,8 +211,8 @@ func todoHandlers() http.Handler {
 	rg.Group(func(r chi.Router) {
 		r.Get("/", fetchTodos)
 		r.Post("/", createTodo)
-		r.Put("/", updateTodo)
-		r.Delete("/", deleteTodo)
+		r.Put("/{id}", updateTodo)
+		r.Delete("/{id}", deleteTodo)
 	})
 	return rg
 }
