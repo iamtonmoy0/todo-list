@@ -50,6 +50,35 @@ func init() {
 	db = sess.DB(dbName)
 }
 
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+
+	err := rnd.Template(w, http.StatusOK, []string{"/static/home.tpl"}, nil)
+	checkErr(err)
+}
+func fetchTodos(w http.ResponseWriter, r *http.Response) {
+	todo := []todoModel{}
+	if err := db.C(collectionName).Find(bson.M{}).All(&todo); err != nil {
+		rnd.JSON(w, http.StatusProcessing, renderer.M{
+			"message": "failed to fetch todo",
+			"error":   err,
+		})
+
+	}
+	todoList := []todo{}
+
+	for _, t := range todos {
+		todoList = append(todoList, todo{
+			ID:        t.ID.Hex(),
+			Title:     t.Title,
+			Completed: t.completed,
+			CreatedAt: t.createdAt,
+		})
+	} //bson data from db and send to frontend ,
+	rnd.JSON(w, http.StatusOK, renderer.M{
+		"data": todoList,
+	})
+}
+
 func main() {
 	stopChan := make(chan os.Signal) //for stopping server
 	signal.Notify(stopChan, os.Interrupt)
@@ -75,9 +104,9 @@ func main() {
 	log.Println("shutting down server ........")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	srv.Shutdown(ctx)
-	defer cancel(
-		log.Println("server gracefully stopped !")
-	)
+	defer cancel()
+	log.Println("server gracefully stopped....!")
+
 }
 
 func todoHandlers() http.Handler {
