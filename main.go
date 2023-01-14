@@ -39,8 +39,8 @@ type (
 	todo struct {
 		ID        string    `json:"id"`
 		Title     string    `json:"title"`
-		Completed bool      `json:"complete"`
-		CreateAt  time.Time `json:"create_at"`
+		Completed bool      `json:"completed"`
+		CreateAt  time.Time `json:"created_at"`
 	}
 )
 
@@ -77,7 +77,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 		ID:        bson.NewObjectId(),
 		Title:     t.Title,
 		Completed: false,
-		CreateAt:  time.Now(),
+		CreatedAt: time.Now(),
 	}
 	if err := db.C(collectionName).Insert(&tm); err != nil {
 		rnd.JSON(w, http.StatusProcessing, renderer.M{
@@ -182,7 +182,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Get("/", homeHandler)
-	r.Mount("/", todoHandlers())
+	r.Mount("/todo", todoHandlers())
 	srv := &http.Server{
 		Addr:         port,
 		Handler:      r,
